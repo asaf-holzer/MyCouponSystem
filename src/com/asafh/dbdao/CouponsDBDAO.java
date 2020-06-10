@@ -15,9 +15,14 @@ import com.asafh.beans.Coupon;
 import com.asafh.dao.CouponsDAO;
 import com.asafh.utils.TicketsSoldOutException;
 
+
+
 public class CouponsDBDAO implements CouponsDAO {
-	
+	public Date replaseDate(java.util.Date date) {
+		return new Date (date.getTime());
+	}
 	public static CategoriesDBDAO ctgDBDAO=new CategoriesDBDAO();
+	
 	@Override
 	public void addCoupon(Coupon coupon) {
 		Connection connection = null;
@@ -39,8 +44,8 @@ public class CouponsDBDAO implements CouponsDAO {
 			statement.setInt(2, ctgDBDAO.getIdCategory(coupon.getCategory()));
 			statement.setString(3, coupon.getTitle());
 			statement.setString(4, coupon.getDescription());
-			statement.setDate(5, (Date) coupon.getStartDate());
-			statement.setDate(6, (Date) coupon.getEndDate());
+			statement.setDate(5,  replaseDate(coupon.getStartDate()));
+			statement.setDate(6, replaseDate(coupon.getEndDate()));
 			statement.setInt(7, coupon.getAmount());
 			statement.setDouble(8, coupon.getPrice());
 			statement.setString(9, coupon.getImage());
@@ -75,7 +80,7 @@ public class CouponsDBDAO implements CouponsDAO {
 				connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
 			} catch (InterruptedException e) {
 
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 
 			String sql = "UPDATE `coupons_system`.`coupons` SET category_id=?,title=?,"
@@ -113,7 +118,7 @@ public class CouponsDBDAO implements CouponsDAO {
 				connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
 			} catch (InterruptedException e) {
 
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 
 			String sql = "DELETE FROM `coupons_system`.`coupons` WHERE id=? ";
@@ -141,7 +146,7 @@ public class CouponsDBDAO implements CouponsDAO {
 				connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
 			} catch (InterruptedException e) {
 
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 			String sql = "SELECT * FROM `coupons_system`.`coupons`";
 			Statement statement = connection.createStatement();
@@ -182,7 +187,7 @@ public class CouponsDBDAO implements CouponsDAO {
 				connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
 			} catch (InterruptedException e) {
 
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 			String sql = "SELECT * FROM `coupons_system`.`coupons` WHERE id=? ";
 
@@ -225,7 +230,7 @@ public class CouponsDBDAO implements CouponsDAO {
 				connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
 			} catch (InterruptedException e) {
 
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 			Coupon tmpCoupon = getOneCoupon(couponID);
 			if (tmpCoupon.getAmount()>0) {
@@ -271,7 +276,7 @@ public class CouponsDBDAO implements CouponsDAO {
 				connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
 			} catch (InterruptedException e) {
 
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 
 			String sql = "DELETE FROM `coupons_system`.`customers_vs_coupons` WHERE customer_id=? AND coupon_id=? ";

@@ -2,6 +2,7 @@ package com.asafh.beans;
 
 import java.util.Date;
 
+
 public class Coupon {
 	private int id;
 	private int companyID;
