@@ -99,7 +99,7 @@ public class Test {
 			System.out.println(coupon);
 		}
 		
-			
+		System.out.println(copDbdao.getOneCoupon(3));	
 		com.asafh.utils.ConnectionPool.getInstance().closeAllConnection();
 
 		

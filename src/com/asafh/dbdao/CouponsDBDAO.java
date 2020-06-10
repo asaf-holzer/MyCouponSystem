@@ -158,8 +158,8 @@ public class CouponsDBDAO implements CouponsDAO {
 				Category category = ctgDBDAO.getCategory(resultSet.getInt(3));
 				String title = resultSet.getString(4);
 				String description = resultSet.getString(5);
-				java.util.Date startDate = resultSet.getDate(6);
-				java.util.Date endDate = resultSet.getDate(7);
+				Date startDate = resultSet.getDate(6);
+				Date endDate = resultSet.getDate(7);
 				int amount = resultSet.getInt(8);
 				double price = resultSet.getDouble(9);
 				String image = resultSet.getString(10);
