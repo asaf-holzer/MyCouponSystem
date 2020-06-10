@@ -1,5 +1,4 @@
 import java.util.Date;
-
 import com.asafh.beans.Category;
 import com.asafh.beans.Company;
 import com.asafh.beans.Coupon;
@@ -75,13 +74,13 @@ public class Test {
 
 		
 		Coupon cp1 = new Coupon(cmp1.getId(), Category.Food, "1+1", "buy one get one",
-				realDate(2020, 6, 25), realDate(2020, 7, 7), 100, 3.0, " ");
+				realDate(2020, 6, 25), realDate(2020, 7, 7), 100, 3.0, "https://bla bla... ");
 		Coupon cp2 = new Coupon(cmp2.getId(), Category.Food, "1+2", "buy one get two",
-				realDate(2020, 6, 25),  realDate(2020, 7, 7), 50, 3.5, " ");
+				realDate(2020, 6, 25),  realDate(2020, 7, 7), 50, 3.5, "https://bla bla... ");
 		Coupon cp3 = new Coupon(cmp3.getId(), Category.Restaurant, "2+1", "the therd free",
-				realDate(2020, 6, 25),  realDate(2020, 7, 7), 70, 2.0, " ");
+				realDate(2020, 6, 25),  realDate(2020, 7, 7), 70, 2.0, "https://bla bla... ");
 		Coupon cp4 = new Coupon(cmp4.getId(), Category.Electricity, "hat", "buy one get hat",
-				realDate(2020, 6, 25),  realDate(2020, 7, 7), 85, 4.5, " ");
+				realDate(2020, 6, 25),  realDate(2020, 7, 7), 85, 4.5, "https://bla bla... ");
 
 		CouponsDBDAO copDbdao = new CouponsDBDAO();
 
@@ -94,7 +93,12 @@ public class Test {
 		copDbdao.addCouponPurchase(cs2.getId(), cp2.getId());
 		copDbdao.addCouponPurchase(cs3.getId(), cp3.getId());
 		copDbdao.addCouponPurchase(cs4.getId(), cp4.getId());
-
+		
+		
+		for (Coupon coupon : copDbdao.getAllCoupons()) {
+			System.out.println(coupon);
+		}
+		
 			
 		com.asafh.utils.ConnectionPool.getInstance().closeAllConnection();
 

@@ -91,8 +91,8 @@ public class CouponsDBDAO implements CouponsDAO {
 			statement.setInt(1,ctgDBDAO.getIdCategory(coupon.getCategory()));
 			statement.setString(2, coupon.getTitle());
 			statement.setString(3, coupon.getDescription());
-			statement.setDate(4, (Date) coupon.getStartDate());
-			statement.setDate(5, (Date) coupon.getEndDate());
+			statement.setDate(4,  replaseDate(coupon.getStartDate()));
+			statement.setDate(5, replaseDate(coupon.getEndDate()));
 			statement.setInt(6, coupon.getAmount());
 			statement.setDouble(7, coupon.getPrice());
 			statement.setString(8, coupon.getImage());
@@ -158,8 +158,8 @@ public class CouponsDBDAO implements CouponsDAO {
 				Category category = ctgDBDAO.getCategory(resultSet.getInt(3));
 				String title = resultSet.getString(4);
 				String description = resultSet.getString(5);
-				Date startDate = resultSet.getDate(6);
-				Date endDate = resultSet.getDate(7);
+				java.util.Date startDate = resultSet.getDate(6);
+				java.util.Date endDate = resultSet.getDate(7);
 				int amount = resultSet.getInt(8);
 				double price = resultSet.getDouble(9);
 				String image = resultSet.getString(10);
