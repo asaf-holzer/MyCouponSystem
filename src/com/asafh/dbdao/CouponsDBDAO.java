@@ -15,14 +15,13 @@ import com.asafh.beans.Coupon;
 import com.asafh.dao.CouponsDAO;
 import com.asafh.utils.TicketsSoldOutException;
 
-
-
 public class CouponsDBDAO implements CouponsDAO {
 	public Date replaseDate(java.util.Date date) {
-		return new Date (date.getTime());
+		return new Date(date.getTime());
 	}
-	public static CategoriesDBDAO ctgDBDAO=new CategoriesDBDAO();
-	
+
+	public static CategoriesDBDAO ctgDBDAO = new CategoriesDBDAO();
+
 	@Override
 	public void addCoupon(Coupon coupon) {
 		Connection connection = null;
@@ -39,16 +38,17 @@ public class CouponsDBDAO implements CouponsDAO {
 					+ "title,description,start_date, end_date,amount,price,image)" + " VALUES (?,?,?,?,?,?,?,?,?)";
 
 			PreparedStatement statement = connection.prepareStatement(sql);
-			
+
 			statement.setInt(1, coupon.getCompanyID());
 			statement.setInt(2, ctgDBDAO.getIdCategory(coupon.getCategory()));
 			statement.setString(3, coupon.getTitle());
 			statement.setString(4, coupon.getDescription());
-			statement.setDate(5,  replaseDate(coupon.getStartDate()));
+			statement.setDate(5, replaseDate(coupon.getStartDate()));
 			statement.setDate(6, replaseDate(coupon.getEndDate()));
 			statement.setInt(7, coupon.getAmount());
 			statement.setDouble(8, coupon.getPrice());
 			statement.setString(9, coupon.getImage());
+
 			statement.executeUpdate();
 
 			String sql1 = "SELECT * FROM `coupons_system`.`coupons` WHERE title=? AND description=?";
@@ -88,10 +88,10 @@ public class CouponsDBDAO implements CouponsDAO {
 
 			PreparedStatement statement = connection.prepareStatement(sql);
 
-			statement.setInt(1,ctgDBDAO.getIdCategory(coupon.getCategory()));
+			statement.setInt(1, ctgDBDAO.getIdCategory(coupon.getCategory()));
 			statement.setString(2, coupon.getTitle());
 			statement.setString(3, coupon.getDescription());
-			statement.setDate(4,  replaseDate(coupon.getStartDate()));
+			statement.setDate(4, replaseDate(coupon.getStartDate()));
 			statement.setDate(5, replaseDate(coupon.getEndDate()));
 			statement.setInt(6, coupon.getAmount());
 			statement.setDouble(7, coupon.getPrice());
@@ -99,6 +99,7 @@ public class CouponsDBDAO implements CouponsDAO {
 			statement.setInt(9, coupon.getId());
 
 			statement.executeUpdate();
+
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 
@@ -233,28 +234,30 @@ public class CouponsDBDAO implements CouponsDAO {
 				System.out.println(e.getMessage());
 			}
 			Coupon tmpCoupon = getOneCoupon(couponID);
-			if (tmpCoupon.getAmount()>0) {
-				
-			
-			String sql = "UPDATE `coupons_system`.`coupons` SET  amount=? WHERE id=? ";
+			if (tmpCoupon.getAmount() > 0) {
 
-			PreparedStatement statement = connection.prepareStatement(sql);
+				String sql = "UPDATE `coupons_system`.`coupons` SET  amount=? WHERE id=? ";
 
-			statement.setInt(1, (tmpCoupon.getAmount()) - 1);
+				PreparedStatement statement = connection.prepareStatement(sql);
 
-			statement.setInt(2, couponID);
+				statement.setInt(1, (tmpCoupon.getAmount()) - 1);
 
-			statement.executeUpdate();
+				statement.setInt(2, couponID);
 
-			String sql1 = "INSERT INTO `coupons_system`.`customers_vs_coupons`"
-					+ " (customer_id,coupon_id) VALUES (?,?)";
+				statement.executeUpdate();
 
-			PreparedStatement statement1 = connection.prepareStatement(sql1);
+				String sql1 = "INSERT INTO `coupons_system`.`customers_vs_coupons`"
+						+ " (customer_id,coupon_id) VALUES (?,?)";
 
-			statement1.setInt(1, customerID);
-			statement1.setInt(2, couponID);
-			statement1.executeUpdate();
-			}else {
+				PreparedStatement statement1 = connection.prepareStatement(sql1);
+
+				statement1.setInt(1, customerID);
+				statement1.setInt(2, couponID);
+				statement1.executeUpdate();
+
+
+
+			} else {
 				throw new com.asafh.utils.TicketsSoldOutException();
 			}
 		} catch (
@@ -295,4 +298,60 @@ public class CouponsDBDAO implements CouponsDAO {
 		}
 	}
 
+	public List<Coupon> getArrayListCouponsPerCustomer(int customerID) {
+		List<Coupon> arr = new ArrayList<Coupon>();
+		Connection connection = null;
+		try {
+
+			try {
+				connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
+			} catch (InterruptedException e) {
+
+				System.out.println(e.getMessage());
+			}
+			
+			String sql = "SELECT * FROM `coupons_system`.`customers_vs_coupons` WHERE customer_id=? ";
+
+			PreparedStatement statement = connection.prepareStatement(sql);
+			statement.setInt(1, customerID);
+			ResultSet resultSet = statement.executeQuery();
+
+			while (resultSet.next()) {
+				
+				String sql1 = "SELECT * FROM `coupons_system`.`coupons` WHERE id=? ";
+
+				PreparedStatement statement1 = connection.prepareStatement(sql1);
+				statement1.setInt(1, resultSet.getInt(2));
+				ResultSet resultSet1 = statement1.executeQuery();
+
+				if (resultSet1.next()) {
+					int id = resultSet1.getInt(1);
+					int companyID = resultSet1.getInt(2);
+					Category category = ctgDBDAO.getCategory(resultSet1.getInt(3));
+					String title = resultSet1.getString(4);
+					String description = resultSet1.getString(5);
+					Date startDate = resultSet1.getDate(6);
+					Date endDate = resultSet1.getDate(7);
+					int amount = resultSet1.getInt(8);
+					double price = resultSet1.getDouble(9);
+					String image = resultSet1.getString(10);
+
+					arr.add(new Coupon(id, companyID, category, title, description, startDate, endDate, amount, price,
+							image));
+
+				}
+
+			}
+			
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+
+		} finally {
+			com.asafh.utils.ConnectionPool.getInstance().returnConnection(connection);
+			connection = null;
+
+		}
+		return arr;
+
+	}
 }

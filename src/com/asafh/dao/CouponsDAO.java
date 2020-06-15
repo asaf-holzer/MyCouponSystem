@@ -7,7 +7,7 @@ import com.asafh.utils.TicketsSoldOutException;
 
 public interface CouponsDAO {
 
-	void addCoupon(Coupon coupon) ;
+	void addCoupon(Coupon coupon);
 	void updateCoupon(Coupon coupon);
 	void deleteCoupon(int couponID);
 	List<Coupon> getAllCoupons();

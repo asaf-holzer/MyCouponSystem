@@ -118,8 +118,9 @@ public class CustomerDBDAO implements CustomerDAO {
 
 			statement.setString(1, customer.getFirstName());
 			statement.setString(2, customer.getLastName());
-			statement.setString(3, customer.getPassword());
-			statement.setInt(4, customer.getId());
+			statement.setString(3, customer.getEmail());
+			statement.setString(4, customer.getPassword());
+			statement.setInt(5, customer.getId());
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
@@ -214,9 +215,9 @@ public class CustomerDBDAO implements CustomerDAO {
 			if (resultSet.next()) {
 				int id = resultSet.getInt(1);
 				String firstname = resultSet.getString(2);
-				String lastname = resultSet.getString(2);
-				String email = resultSet.getString(3);
-				String password = resultSet.getString(4);
+				String lastname = resultSet.getString(3);
+				String email = resultSet.getString(4);
+				String password = resultSet.getString(5);
 
 				return new Customer(id, firstname, lastname, email, password);
 			}
