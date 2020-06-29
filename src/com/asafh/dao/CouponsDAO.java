@@ -14,4 +14,8 @@ public interface CouponsDAO {
 	Coupon getOneCoupon(int couponID);
 	void addCouponPurchase(int customerID, int couponID) throws TicketsSoldOutException;
 	void deleteCouponPurchase(int customerID, int couponID);
+	void deleteCouponPurchaseByCouponID(int couponID);//my addition
+	void deleteAllCouponsByCompany(int companyID);// my addition
+	void deleteCouponPurchaseByCustomerID(int customerID);//my addition
+	List<Coupon> getArrayListCouponsPerCustomer(int customerID) ;
 }

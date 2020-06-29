@@ -8,12 +8,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import com.asafh.beans.Customer;
-import com.asafh.dao.CustomerDAO;
-import com.asafh.utils.duplicateCustomerException;
+import com.asafh.dao.CustomersDAO;
 
-public class CustomerDBDAO implements CustomerDAO {
+public class CustomersDBDAO implements CustomersDAO {
 
 	public boolean isCustomerExists(String email, String password) {
 		Connection connection = null;
@@ -51,10 +49,48 @@ public class CustomerDBDAO implements CustomerDAO {
 		return false;
 
 	}
+	//my extension
+	public boolean isCustomerExistsByEmail(String email) {
+		Connection connection = null;
+		try {
+			try {
+				connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
 
-	public void addCustomer(Customer customer) throws duplicateCustomerException {
+			} catch (InterruptedException e) {
 
-		if (isCustomerExists(customer.getEmail(), customer.getPassword()) == false) {
+				System.out.println(e.getMessage());
+			}
+
+			String sql = "SELECT * FROM `coupons_system`.`customers`WHERE email=? ";
+			PreparedStatement statement1 = connection.prepareStatement(sql);
+			statement1.setString(1, email);
+			
+			ResultSet resultSet = statement1.executeQuery();
+
+			boolean iscustomerExists = false;
+
+			if (resultSet.next()) {
+				iscustomerExists = true;
+
+			}
+
+			return iscustomerExists;
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+
+		} finally {
+			com.asafh.utils.ConnectionPool.getInstance().returnConnection(connection);
+			connection = null;
+		}
+
+		return false;
+
+	}
+
+	
+	public void addCustomer(Customer customer) {
+
+		
 
 			Connection connection = null;
 			try {
@@ -94,9 +130,7 @@ public class CustomerDBDAO implements CustomerDAO {
 				com.asafh.utils.ConnectionPool.getInstance().returnConnection(connection);
 				connection = null;
 			}
-		} else {
-			throw new com.asafh.utils.duplicateCustomerException();
-		}
+		
 	}
 
 	@Override

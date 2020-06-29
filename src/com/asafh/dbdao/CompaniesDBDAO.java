@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.asafh.beans.Company;
-import com.asafh.utils.duplicateCompanyException;
+
 
 public class CompaniesDBDAO implements com.asafh.dao.CompaniesDAO {
 
@@ -52,10 +52,48 @@ public class CompaniesDBDAO implements com.asafh.dao.CompaniesDAO {
 		return false;
 
 	}
+	
+	public boolean isCompanyExistsByNameOrEmail(String name, String email) {
+		Connection connection = null;
+		try {
+			try {
+				connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
 
-	public void addCompany(Company company) throws duplicateCompanyException {
+			} catch (InterruptedException e) {
 
-		if (isCompanyExists(company.getEmail(), company.getPassword()) == false) {
+				System.out.println(e.getMessage());
+			}
+
+			String sql = "SELECT * FROM `coupons_system`.`companies` "
+					+ "WHERE name=? OR email=?";
+			PreparedStatement statement1 = connection.prepareStatement(sql);
+			statement1.setString(1, name);
+			statement1.setString(2, email);
+			ResultSet resultSet = statement1.executeQuery();
+
+
+			boolean isCompanyExists = false;
+			
+				if (resultSet.next()) {
+					isCompanyExists = true;
+					
+				}
+			
+
+			return isCompanyExists;
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+
+		} finally {
+			com.asafh.utils.ConnectionPool.getInstance().returnConnection(connection);
+			connection = null;
+		}
+
+		return false;
+
+	}
+
+	public void addCompany(Company company)  {		
 
 			Connection connection = null;
 			try {
@@ -77,11 +115,12 @@ public class CompaniesDBDAO implements com.asafh.dao.CompaniesDAO {
 
 				statement.executeUpdate();
 
-				String sql1 = "SELECT * FROM `coupons_system`.`companies` WHERE email=? AND password=?";
+				String sql1 = "SELECT * FROM `coupons_system`.`companies` WHERE name= ? AND email=? AND password=?  ";
 
 				PreparedStatement statement1 = connection.prepareStatement(sql1);
-				statement1.setString(1, company.getEmail());
-				statement1.setString(2, company.getPassword());
+				statement1.setString(1, company.getName());
+				statement1.setString(2, company.getEmail());
+				statement1.setString(3, company.getPassword());
 				ResultSet resultSet = statement1.executeQuery();
 
 				if (resultSet.next()) {
@@ -94,9 +133,6 @@ public class CompaniesDBDAO implements com.asafh.dao.CompaniesDAO {
 				com.asafh.utils.ConnectionPool.getInstance().returnConnection(connection);
 				connection = null;
 			}
-		} else {
-			throw new com.asafh.utils.duplicateCompanyException();
-		}
 
 	}
 
@@ -224,6 +260,7 @@ public class CompaniesDBDAO implements com.asafh.dao.CompaniesDAO {
 		return null;
 
 	}
+	
 	
 
 }
