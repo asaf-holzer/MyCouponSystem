@@ -17,5 +17,6 @@ public interface CouponsDAO {
 	void deleteCouponPurchaseByCouponID(int couponID);//my addition
 	void deleteAllCouponsByCompany(int companyID);// my addition
 	void deleteCouponPurchaseByCustomerID(int customerID);//my addition
-	List<Coupon> getArrayListCouponsPerCustomer(int customerID) ;
+	List<Coupon> getArrayListCouponsByCustomer(int customerID) ;
+	List<Coupon> getArrayListCouponsByCompany(int companyID) ; 
 }

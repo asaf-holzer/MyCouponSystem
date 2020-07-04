@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.asafh.beans.Company;
 import com.asafh.beans.Customer;
+import com.asafh.utils.CompanyException;
 import com.asafh.utils.CustomerException;
-import com.asafh.utils.duplicateCompanyException;
 import com.asafh.utils.updateCompanyException;
 
 public class AdminFacade extends ClientFacade {
@@ -17,17 +17,15 @@ public class AdminFacade extends ClientFacade {
 	@Override
 	public boolean login(String email, String password) {
 		if (email.equals("admin@admin.com") && password.equals("admin")) {
-			//System.out.println("true");
 			return true;
 		}
-		//System.out.println("false");
 		return false;
 	}
 
-	public void addCompany(Company company) throws duplicateCompanyException {
+	public void addCompany(Company company) throws CompanyException {
 
 		if (companiesDAO.isCompanyExistsByNameOrEmail(company.getName(), company.getEmail())) {
-			throw new duplicateCompanyException("the name or email is allredy exist");
+			throw new CompanyException("the name or email is allredy exist");
 		}
 		companiesDAO.addCompany(company);
 
@@ -47,37 +45,46 @@ public class AdminFacade extends ClientFacade {
 //
 //	}
 
-
 	public void updateCompany(int companyID, Company company) throws updateCompanyException {// (int companyID) my
-																									// addition
+																								// addition
 		Company comp = companiesDAO.getOneCompany(companyID);
 		if (company.getId() != comp.getId() || !company.getName().equals(comp.getName())) {
 			throw new updateCompanyException("you cant update id or name");
 		}
-		if(company.getEmail()!=null) {
+		if (company.getEmail() != null) {
 			comp.setEmail(company.getEmail());
 		}
-		if(company.getPassword()!=null) {
+		if (company.getPassword() != null) {
 			comp.setPassword(company.getPassword());
 		}
 		companiesDAO.updateCompany(companyID, comp);
 	}
 
-	public void deleteCompany(int companyID) {
+	public void deleteCompany(int companyID) throws CompanyException {
+		if (!companiesDAO.isCompanyExistsByCompanyID(companyID)) {
+			throw new CompanyException("the company is not exist by this id");
+		}
 		couponsDAO.deleteAllCouponsByCompany(companyID);
 		companiesDAO.deleteCompany(companyID);
-
 	}
 
 	public List<Company> getAllCompanies() {
-
-		return companiesDAO.getAllCompanies();
+		List<Company> Companies = companiesDAO.getAllCompanies();
+		for (Company company : Companies) {
+			company.setCoupons(couponsDAO.getArrayListCouponsByCompany(company.getId()));
+		}
+		return Companies;
 
 	}
 
-	public Company getOneCompany(int companyID) {
+	public Company getOneCompany(int companyID) throws CompanyException {
+		if (!companiesDAO.isCompanyExistsByCompanyID(companyID)) {
+			throw new CompanyException("the company is not exist by this id");
+		}
+		Company comp = companiesDAO.getOneCompany(companyID);
+		comp.setCoupons(couponsDAO.getArrayListCouponsByCompany(companyID));
 
-		return companiesDAO.getOneCompany(companyID);
+		return comp;
 
 	}
 
@@ -89,11 +96,16 @@ public class AdminFacade extends ClientFacade {
 
 	}
 
-	public void updateCustomer(int customerID, Customer customer) throws CustomerException {//(int customerID) my addition
-		
-		Customer cs= getOneCustomer(customerID);
-		if (customer.getId()!=cs.getId()) {
-			throw new CustomerException("you cant change the id number" );
+	public void updateCustomer(int customerID, Customer customer) throws CustomerException, CompanyException {// (int
+																												// customerID)
+																												// my
+																												// addition
+
+		Customer cs = customersDAO.getOneCustomer(customerID);
+		if (customer.getId() != cs.getId()) {
+			throw new CustomerException("you cant change the id number");
+		} else if (!customersDAO.isCustomerExistsByCustomerID(customerID)) {
+			throw new CompanyException("the customer is not exist by this id");
 		}
 		customersDAO.updateCustomer(customer);
 	}
@@ -107,8 +119,13 @@ public class AdminFacade extends ClientFacade {
 		return customersDAO.getAllCustomers();
 	}
 
-	public Customer getOneCustomer(int customerID) {
-		return customersDAO.getOneCustomer(customerID);
+	public Customer getOneCustomer(int customerID) throws CompanyException {
+		if (!customersDAO.isCustomerExistsByCustomerID(customerID)) {
+			throw new CompanyException("the customer is not exist by this id");
+		}
+		Customer customer = customersDAO.getOneCustomer(customerID);
+		customer.setCoupons(couponsDAO.getArrayListCouponsByCustomer(customerID));
+		return customer;
 	}
 
 }

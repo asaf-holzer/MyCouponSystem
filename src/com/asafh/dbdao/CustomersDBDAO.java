@@ -49,22 +49,17 @@ public class CustomersDBDAO implements CustomersDAO {
 		return false;
 
 	}
-	//my extension
-	public boolean isCustomerExistsByEmail(String email) {
+
+	public boolean isCustomerExistsByEmail(String email) {// my addition for admin facade
 		Connection connection = null;
+
 		try {
-			try {
-				connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
-
-			} catch (InterruptedException e) {
-
-				System.out.println(e.getMessage());
-			}
+			connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
 
 			String sql = "SELECT * FROM `coupons_system`.`customers`WHERE email=? ";
 			PreparedStatement statement1 = connection.prepareStatement(sql);
 			statement1.setString(1, email);
-			
+
 			ResultSet resultSet = statement1.executeQuery();
 
 			boolean iscustomerExists = false;
@@ -75,7 +70,7 @@ public class CustomersDBDAO implements CustomersDAO {
 			}
 
 			return iscustomerExists;
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 
 		} finally {
@@ -87,50 +82,76 @@ public class CustomersDBDAO implements CustomersDAO {
 
 	}
 
-	
+	public boolean isCustomerExistsByCustomerID(int customerID) {// my addition for exception
+		Connection connection = null;
+
+		try {
+			connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
+
+			String sql = "SELECT * FROM `coupons_system`.`customers` WHERE id=? ";
+			PreparedStatement statement1 = connection.prepareStatement(sql);
+			statement1.setInt(1, customerID);
+
+			ResultSet resultSet = statement1.executeQuery();
+
+			boolean iscustomerExists = false;
+
+			if (resultSet.next()) {
+				iscustomerExists = true;
+			}
+
+			return iscustomerExists;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+
+		} finally {
+			com.asafh.utils.ConnectionPool.getInstance().returnConnection(connection);
+			connection = null;
+		}
+		return false;
+	}
+
 	public void addCustomer(Customer customer) {
 
-		
-
-			Connection connection = null;
+		Connection connection = null;
+		try {
 			try {
-				try {
-					connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
+				connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
 
-				} catch (InterruptedException e) {
+			} catch (InterruptedException e) {
 
-					System.out.println(e.getMessage());
-				}
-
-				String sql = "INSERT INTO `coupons_system`.`customers` (first_name, last_name, email,password) VALUES (?,?,?,?)";
-
-				PreparedStatement statement = connection.prepareStatement(sql);
-
-				statement.setString(1, customer.getFirstName());
-				statement.setString(2, customer.getLastName());
-				statement.setString(3, customer.getEmail());
-				statement.setString(4, customer.getPassword());
-
-				statement.executeUpdate();
-				
-				String sql1 = "SELECT * FROM `coupons_system`.`customers` WHERE email=? AND password=?";
-
-				PreparedStatement statement1 = connection.prepareStatement(sql1);
-				statement1.setString(1, customer.getEmail());
-				statement1.setString(2, customer.getPassword());
-				ResultSet resultSet = statement1.executeQuery();
-
-				if (resultSet.next()) {
-					customer.setId(resultSet.getInt(1));
-				}
-
-			} catch (SQLException e) {
 				System.out.println(e.getMessage());
-			} finally {
-				com.asafh.utils.ConnectionPool.getInstance().returnConnection(connection);
-				connection = null;
 			}
-		
+
+			String sql = "INSERT INTO `coupons_system`.`customers` (first_name, last_name, email,password) VALUES (?,?,?,?)";
+
+			PreparedStatement statement = connection.prepareStatement(sql);
+
+			statement.setString(1, customer.getFirstName());
+			statement.setString(2, customer.getLastName());
+			statement.setString(3, customer.getEmail());
+			statement.setString(4, customer.getPassword());
+
+			statement.executeUpdate();
+
+			String sql1 = "SELECT * FROM `coupons_system`.`customers` WHERE email=? AND password=?";
+
+			PreparedStatement statement1 = connection.prepareStatement(sql1);
+			statement1.setString(1, customer.getEmail());
+			statement1.setString(2, customer.getPassword());
+			ResultSet resultSet = statement1.executeQuery();
+
+			if (resultSet.next()) {
+				customer.setId(resultSet.getInt(1));
+			}
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} finally {
+			com.asafh.utils.ConnectionPool.getInstance().returnConnection(connection);
+			connection = null;
+		}
+
 	}
 
 	@Override

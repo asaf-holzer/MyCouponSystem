@@ -19,12 +19,13 @@ import com.asafh.dbdao.CompaniesDBDAO;
 import com.asafh.dbdao.CouponsDBDAO;
 import com.asafh.dbdao.CustomersDBDAO;
 import com.asafh.facade.AdminFacade;
+import com.asafh.utils.BeautyTable;
+import com.asafh.utils.CompanyException;
 import com.asafh.utils.ConnectionPool;
 import com.asafh.utils.CustomerException;
 import com.asafh.utils.DateWrongException;
 import com.asafh.utils.TicketsSoldOutException;
 import com.asafh.utils.duplicateCategoryException;
-import com.asafh.utils.duplicateCompanyException;
 import com.asafh.utils.updateCompanyException;
 
 public class Test {
@@ -34,9 +35,9 @@ public class Test {
 		return d1;
 	}
 
-//	public static java.sql.Date replaseDate(Date date) {
-//		return new java.sql.Date(date.getTime());
-//	}
+	public static java.sql.Date replaseDate(Date date) {
+		return new java.sql.Date(date.getTime());
+	}
 
 	public static void printArraylist(List arr) {
 		System.out.println(
@@ -48,7 +49,7 @@ public class Test {
 				"****************************************************************************************************");
 	}
 
-	public static void TestAll() throws DateWrongException, duplicateCategoryException, TicketsSoldOutException {
+	public static void TestAll() throws DateWrongException, duplicateCategoryException, TicketsSoldOutException, CompanyException {
 		PrintTitles.asafsP();
 		DBManeger.dropAndCreateAllTables();
 
@@ -118,13 +119,28 @@ public class Test {
 		cstDbdao.addCustomer(cs5);
 		cstDbdao.addCustomer(cs6);
 
+//		********************************************************************************************
+//		********************************************************************************************
+//		********************************************************************************************		
+//		    ____                                               _              
+//		   / ___|   ___    _ __ ___    _ __     __ _   _ __   (_)   ___   ___ 
+//		  | |      / _ \  | '_ ` _ \  | '_ \   / _` | | '_ \  | |  / _ \ / __|
+//		  | |___  | (_) | | | | | | | | |_) | | (_| | | | | | | | |  __/ \__ \
+//		   \____|  \___/  |_| |_| |_| | .__/   \__,_| |_| |_| |_|  \___| |___/
+//		                              |_|                                     
+//		
+//		
+//		********************************************************************************************
+//		********************************************************************************************
+//		********************************************************************************************		
+
 		PrintTitles.companies();
 
 		// print the companies
 		PrintLines.PrintLines();
 		System.out.println("the companies list");
-		printArraylist(cmpDbdao.getAllCompanies());
-
+		BeautyTable.tableWithLinesCompanies(cmpDbdao.getAllCompanies());
+		
 		// try the isCompanyExists boolean method
 		PrintLines.PrintLines();
 		System.out.println("try the isCompanyExists boolean method");
@@ -151,6 +167,9 @@ public class Test {
 		PrintLines.PrintLines();
 		System.out.println("try the update- companies method");
 		PrintLines.printOneLine();
+		System.out.println("the companies list before update");
+		BeautyTable.tableWithLinesCompanies(cmpDbdao.getAllCompanies());
+		
 		System.out.println("company 1 try to update id...");
 		cmp1.setId(9);
 		cmpDbdao.updateCompany(1, cmp1);
@@ -164,8 +183,8 @@ public class Test {
 		cmp4.setPassword("1234567890");
 		cmpDbdao.updateCompany(4, cmp4);
 		System.out.println("the companies list after update");
-		printArraylist(cmpDbdao.getAllCompanies());
-
+		BeautyTable.tableWithLinesCompanies(cmpDbdao.getAllCompanies());
+		
 		// try the delete method
 		PrintLines.PrintLines();
 		System.out.println("try the delete method");
@@ -175,22 +194,39 @@ public class Test {
 		cmpDbdao.deleteCompany(3);
 		System.err.println("Attention!!!  the company didn't delete because it is foring key. wait to facade ");
 		System.out.println("the companies list after delete");
-		printArraylist(cmpDbdao.getAllCompanies());
-
+		//printArraylist(cmpDbdao.getAllCompanies());
+		BeautyTable.tableWithLinesCompanies(cmpDbdao.getAllCompanies());
+		
 		// try getOneCompany method
 		PrintLines.PrintLines();
 		System.out.println("try the getOneCompany method");
 		PrintLines.printOneLine();
 		System.out.println("get company 4");
-		System.out.println(cmpDbdao.getOneCompany(4));
+		BeautyTable.tableWithLinesOneCompany(cmpDbdao.getOneCompany(4));
 
+
+//		********************************************************************************************
+//		********************************************************************************************
+//		********************************************************************************************		
+//		                     ____                                               
+//	                        / ___|   ___    _   _   _ __     ___    _ __    ___ 
+//	                       | |      / _ \  | | | | | '_ \   / _ \  | '_ \  / __|
+//		                   | |___  | (_) | | |_| | | |_) | | (_) | | | | | \__ \
+//		                    \____|  \___/   \__,_| | .__/   \___/  |_| |_| |___/
+//		                                           |_|                          
+//		
+//		
+//		********************************************************************************************
+//		********************************************************************************************
+//		********************************************************************************************		
+		
 		PrintTitles.coupons();
 
 		// print the coupons
 		PrintLines.PrintLines();
 		System.out.println("the coupons list");
-		printArraylist(copDbdao.getAllCoupons());
-
+		BeautyTable.tableWithLinesCoupons(copDbdao.getAllCoupons());
+		
 		// try the update method
 		PrintLines.PrintLines();
 		System.out.println("try the update- coupons method");
@@ -206,7 +242,7 @@ public class Test {
 		cp4.setPrice(55.5);
 		cp1.setImage("picture");
 
-		System.out.println("copon 1 try to update id , category , image");
+		System.out.println("copon 1 try to update company_id , category , image");
 		System.out.println("copon 2 try to update title , description");
 		System.out.println("copon 3 try to update startDate , endDate");
 		System.out.println("copon 4 try to update amount , price");
@@ -217,8 +253,8 @@ public class Test {
 		copDbdao.updateCoupon(cp4);
 
 		System.out.println("the coupons list after update");
-		printArraylist(copDbdao.getAllCoupons());
-
+		BeautyTable.tableWithLinesCoupons(copDbdao.getAllCoupons());
+		
 		// try the delete method
 		PrintLines.PrintLines();
 		System.out.println("try the delete- coupons method");
@@ -228,15 +264,13 @@ public class Test {
 		copDbdao.deleteCoupon(3);
 
 		System.out.println("the coupons list after delete");
-		printArraylist(copDbdao.getAllCoupons());
-
+		BeautyTable.tableWithLinesCoupons(copDbdao.getAllCoupons());
+		
 		// try the getOneCoupon method
 		PrintLines.PrintLines();
 		System.out.println("try to get One Coupon #4");
 		PrintLines.printOneLine();
-
-		System.out.println(copDbdao.getOneCoupon(4));
-
+		BeautyTable.tableWithLinesOneCoupon(copDbdao.getOneCoupon(4));
 		PrintTitles.couponPurchase();
 
 		// try the addCouponPurchase method
@@ -251,18 +285,110 @@ public class Test {
 
 		System.out.println("the coupons after add Coupon Purchase");
 		System.out.println("look the change at the amount column");
-		printArraylist(copDbdao.getAllCoupons());
-
+		BeautyTable.tableWithLinesCoupons(copDbdao.getAllCoupons());
+		
 		// try the deleteCouponPurchase method
 		PrintLines.PrintLines();
 		System.out.println("try the delete Coupon Purchase");
 		PrintLines.printOneLine();
 
 		copDbdao.deleteCouponPurchase(cs2.getId(), cp2.getId());
-	
+//		********************************************************************************************
+//		********************************************************************************************
+//		********************************************************************************************		
+//		    ____                 _                                     
+//		   / ___|  _   _   ___  | |_    ___    _ __ ___     ___   _ __ 
+//		  | |     | | | | / __| | __|  / _ \  | '_ ` _ \   / _ \ | '__|
+//		  | |___  | |_| | \__ \ | |_  | (_) | | | | | | | |  __/ | |   
+//		   \____|  \__,_| |___/  \__|  \___/  |_| |_| |_|  \___| |_|   
+//
+//		
+//		********************************************************************************************
+//		********************************************************************************************
+//		********************************************************************************************		
+		//print the customer table
+		PrintTitles.customer();
+		System.out.println("print the customer table");
+		BeautyTable.tableWithLinesCustomers(cstDbdao.getAllCustomers());
+		
+
+		// try the isCustomerExists boolean method
+		PrintLines.PrintLines();
+		System.out.println("try the isCustomerExists boolean method");
+		PrintLines.printOneLine();
+		System.out.println("Customer with email: asafh101@gmail.com and password: 12345 , is exist?");
+		System.out.println(cstDbdao.isCustomerExists("asafh101@gmail.com", "12345"));
+		System.out.println("Customer with email: mish@mish.com and password: 23456 , is exist?");
+		System.out.println(cstDbdao.isCustomerExists("mish@mish.com", "23456"));
+		System.out.println("Customer with email: moshe@gmail.com and password: 1234567890 , is exist?");
+		System.out.println(cstDbdao.isCustomerExists("moshe@gmail.com", "1234567890"));
+		System.out.println("Customer with email: alf@redo.com and password: 9876 , is exist?");
+		System.out.println(cstDbdao.isCustomerExists("alf@redo.com", "9876"));
+
+		//try the updateCustomer method
+		PrintLines.PrintLines();
+		System.out.println("try the update- customers method");
+		PrintLines.printOneLine();
+		System.out.println("the customer list before update");
+		BeautyTable.tableWithLinesCustomers(cstDbdao.getAllCustomers());;
+		
+		System.out.println("customer 1 try to update id...");
+		cs1.setId(9);
+		cstDbdao.updateCustomer(cs1);
+		System.out.println("customer 2 try to update first name...");
+		cs2.setFirstName("Haim");
+		cstDbdao.updateCustomer(cs2);
+		System.out.println("customer 3 try to update last name...");
+		cs3.setLastName("Navon");
+		cstDbdao.updateCustomer(cs3);
+		System.out.println("customer 4 try to update email...");
+		cs4.setEmail("rinaD@gmail.com");
+		cstDbdao.updateCustomer(cs4);
+		System.out.println("customer 5 try to update password...");
+		cs5.setPassword("6543221");
+		cstDbdao.updateCustomer(cs5);
+		System.out.println("the customers after updating:");
+		BeautyTable.tableWithLinesCustomers(cstDbdao.getAllCustomers());
+
+		
+		
+		//try the deleteCustomer method
+		PrintLines.PrintLines();
+		System.out.println("try the deleteCustomer method");
+		PrintLines.printOneLine();
+		System.out.println("tryto delete customer #4");
+		cstDbdao.deleteCustomer(4);
+		System.err.println("Attention!!!  the customer didn't delete because it is foring key. wait to facade ");
+		System.out.println("the customers after delete:");
+		BeautyTable.tableWithLinesCustomers(cstDbdao.getAllCustomers());
+		
+		//try the getOneCustomer
+		PrintLines.PrintLines();
+		System.out.println("try the getOneCustomer method");
+		PrintLines.printOneLine();
+		System.out.println("try to get customer #2");
+		BeautyTable.tableWithLinesOneCustomer(cstDbdao.getOneCustomer(2));
+		
+		
+
+		
+//		
+//		********************************************************************************************
+//		********************************************************************************************
+//		********************************************************************************************
+//		                       _____                              _        
+//		                      |  ___|   __ _    ___    __ _    __| |   ___ 
+//		                      | |_     / _` |  / __|  / _` |  / _` |  / _ \
+//		                      |  _|   | (_| | | (__  | (_| | | (_| | |  __/
+//		                      |_|      \__,_|  \___|  \__,_|  \__,_|  \___|
+//
+//		********************************************************************************************
+//		********************************************************************************************
+//		********************************************************************************************		                                               
 		// now try the facade layer
 		// first of all drop the tables and restart
 
+		PrintLines.PrintLines();
 		PrintTitles.clientFacade();
 		PrintLines.PrintLines();
 		System.out.println(
@@ -297,19 +423,20 @@ public class Test {
 			manager.addCompany(comp3);
 			manager.addCompany(comp4);
 
-		} catch (duplicateCompanyException e) {
+		} catch (CompanyException e) {
 			System.out.println(e.getMessage());
 		}
 
 		System.out.println("the companies added by Administrator");
-		printArraylist(manager.getAllCompanies());
+		//printArraylist(manager.getAllCompanies());
+		BeautyTable.tableWithLinesCompanies(cmpDbdao.getAllCompanies());
 		PrintLines.PrintLines();
 
 		System.out.println("try to add company with the same name");
 		try {
 			manager.addCompany(comp5);
 
-		} catch (duplicateCompanyException e) {
+		} catch (CompanyException e) {
 			System.out.println(e.getMessage());
 		}
 		PrintLines.printOneLine();
@@ -317,15 +444,16 @@ public class Test {
 		System.out.println("try to add company with the same email");
 		try {
 			manager.addCompany(comp6);
-		} catch (duplicateCompanyException e) {
+		} catch (CompanyException e) {
 			System.out.println(e.getMessage());
 		}
 
 		// try the update company method
 		PrintLines.PrintLines();
 		System.out.println("try the update company method");
-		PrintLines.printOneLine();
-		System.out.println("the origin company details: "+manager.getOneCompany(1));
+		PrintLines.printOneLine();		
+		System.out.println("the origin company details: ");
+		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(1));
 		System.out.println("try to update id company");
 		comp1.setId(2);
 		try {
@@ -334,10 +462,13 @@ public class Test {
 		} catch (updateCompanyException e) {
 			System.err.println(e.getMessage());
 		}
-		System.out.println("the company details after updating: "+manager.getOneCompany(1));
+		System.out.println();
+		System.out.println("the company details after updating: ");
+		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(1));
 		PrintLines.printOneLine();
 
-		System.out.println("the origin company details: "+manager.getOneCompany(2));
+		System.out.println("the origin company details: ");
+		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(2));
 		System.out.println("try to update name company");
 		comp2.setName("pepsi-cola");
 		try {
@@ -345,10 +476,14 @@ public class Test {
 		} catch (updateCompanyException e) {
 			System.err.println(e.getMessage());
 		}
-		System.out.println("the company details after updating: "+manager.getOneCompany(2));
+		System.out.println("the company details after updating: ");
+		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(2));
+		
 		PrintLines.printOneLine();
 
-		System.out.println("the origin company details: "+manager.getOneCompany(3));
+		System.out.println("the origin company details: ");
+		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(3));
+		
 		System.out.println("try to update email company");
 		comp3.setEmail("alf@alfredo.com");
 		try {
@@ -356,10 +491,12 @@ public class Test {
 		} catch (updateCompanyException e) {
 			System.err.println(e.getMessage());
 		}
-		System.out.println("the company details after updating: "+manager.getOneCompany(3));
+		System.out.println("the company details after updating: ");
+		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(3));
 		PrintLines.printOneLine();
 
-		System.out.println("the origin company details: "+manager.getOneCompany(4));
+		System.out.println("the origin company details: ");
+		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(4));
 		System.out.println("try to update password company");
 		comp4.setPassword("45678");
 		try {
@@ -367,7 +504,8 @@ public class Test {
 		} catch (updateCompanyException e) {
 			System.err.println(e.getMessage());
 		}
-		System.out.println("the company details after updating: "+manager.getOneCompany(4));
+		System.out.println("the company details after updating: ");
+		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(4));
 		PrintLines.printOneLine();
 
 		PrintLines.PrintLines();
@@ -400,20 +538,23 @@ public class Test {
 			System.err.println(e.getMessage());
 		}
 		try {
+			System.out.println("try to add customer with email exist...");
 			manager.addCustomer(cst6);
 		} catch (CustomerException e) {
 			System.err.println(e.getMessage());
 		}
 		
 		System.out.println("the custoners added by Administrator:");
-		printArraylist(manager.getAllCustomers());
+		//printArraylist(manager.getAllCustomers());
+		BeautyTable.tableWithLinesCustomers(manager.getAllCustomers());
 		PrintLines.PrintLines();
 		
 		//try the update customers
 		PrintLines.PrintLines();
 		System.out.println("try the update customers");
 		PrintLines.printOneLine();
-		System.out.println("the origin customer details: "+manager.getOneCustomer(1));
+		System.out.println("the origin customer details: ");
+		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(1));
 		System.out.println("try to update id");
 		cst1.setId(2);
 		try {
@@ -421,10 +562,11 @@ public class Test {
 		} catch (CustomerException e) {
 			System.err.println(e.getMessage());
 		}
-		System.out.println("the customer details after updating: "+manager.getOneCustomer(1));
-		
+		System.out.println("the customer details after updating: ");
+		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(1));
 		PrintLines.printOneLine();
-		System.out.println("the origin customer details: "+manager.getOneCustomer(2));
+		System.out.println("the origin customer details: ");
+		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(2));
 		System.out.println("try to update first name");
 		cst2.setFirstName("aaaa");
 		try {
@@ -432,9 +574,11 @@ public class Test {
 		} catch (CustomerException e) {
 			System.err.println(e.getMessage());
 		}
-		System.out.println("the customer details after updating: "+manager.getOneCustomer(2));
+		System.out.println("the customer details after updating: ");
+		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(2));
 		PrintLines.printOneLine();
-		System.out.println("the origin customer details: "+manager.getOneCustomer(3));
+		System.out.println("the origin customer details: ");
+		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(3));
 		System.out.println("try to update last name");
 		cst3.setLastName("bbbb");
 		try {
@@ -442,9 +586,11 @@ public class Test {
 		} catch (CustomerException e) {
 			System.err.println(e.getMessage());
 		}
-		System.out.println("the customer details after updating: "+manager.getOneCustomer(3));
+		System.out.println("the customer details after updating: ");
+		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(3));
 		PrintLines.printOneLine();
-		System.out.println("the origin customer details: "+manager.getOneCustomer(4));
+		System.out.println("the origin customer details: ");
+		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(4));
 		System.out.println("try to update email");
 		cst4.setEmail("asaf@hollzer.com");
 		try {
@@ -452,9 +598,11 @@ public class Test {
 		} catch (CustomerException e) {
 			System.err.println(e.getMessage());
 		}
-		System.out.println("the customer details after updating: "+manager.getOneCustomer(4));
+		System.out.println("the customer details after updating: ");
+		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(4));
 		PrintLines.printOneLine();
-		System.out.println("the origin customer details: "+manager.getOneCustomer(5));
+		System.out.println("the origin customer details: ");
+		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(5));
 		System.out.println("try to update password");
 		cst5.setPassword("92745");
 		try {
@@ -462,8 +610,8 @@ public class Test {
 		} catch (CustomerException e) {
 			System.err.println(e.getMessage());
 		}
-		System.out.println("the customer details after updating: "+manager.getOneCustomer(5));
-		
+		System.out.println("the customer details after updating: ");
+		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(5));
 //		CompanyFacade company=(CompanyFacade) LoginManager.getInstance().Login("admin@admin.com", "admin",
 //				ClientType.Administrator);
 		
@@ -482,7 +630,12 @@ public class Test {
 	public static void main(String[] args) throws InterruptedException, TicketsSoldOutException, DateWrongException,
 			CustomerException, duplicateCategoryException {
 
-		TestAll();
+		try {
+			TestAll();
+		} catch (DateWrongException | duplicateCategoryException | TicketsSoldOutException | CompanyException e) {
+			
+			System.out.println(e.getMessage());
+		}
 //		
 //		
 //		AdminFacade af= new AdminFacade();

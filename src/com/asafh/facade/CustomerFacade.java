@@ -23,7 +23,7 @@ public class CustomerFacade extends ClientFacade{
 	}
 	
 	public void purchaseCoupon(Coupon coupon) throws CustomerException, CouponException {
-		List<Coupon> couponsPurchase= couponsDAO.getArrayListCouponsPerCustomer(customerID);
+		List<Coupon> couponsPurchase= couponsDAO.getArrayListCouponsByCustomer(customerID);
 		for (Coupon coup : couponsPurchase) {
 			if(coupon.getId()==coup.getId()) {
 				throw new CustomerException("you bought this coupon allredy...");
@@ -49,11 +49,11 @@ public class CustomerFacade extends ClientFacade{
 	
 	public List<Coupon> getCustomerCoupons(){
 		
-		return couponsDAO.getArrayListCouponsPerCustomer(customerID);
+		return couponsDAO.getArrayListCouponsByCustomer(customerID);
 	}
 	
 	public List<Coupon> getCustomerCouponsByCategory(Category category){
-		List<Coupon> coupons= couponsDAO.getArrayListCouponsPerCustomer(customerID);
+		List<Coupon> coupons= couponsDAO.getArrayListCouponsByCustomer(customerID);
 		List<Coupon> couponsByCategory= new ArrayList<Coupon>();
 		for (Coupon coupon : coupons) {
 			if (coupon.getCategory().equals(category)) {
@@ -64,7 +64,7 @@ public class CustomerFacade extends ClientFacade{
 	}
 	
 	public List<Coupon> getCustomerCouponsByMaxPrice(double maxPrice){
-		List<Coupon> coupons= couponsDAO.getArrayListCouponsPerCustomer(customerID);
+		List<Coupon> coupons= couponsDAO.getArrayListCouponsByCustomer(customerID);
 		List<Coupon> couponsByMaxPrice= new ArrayList<Coupon>();
 		for (Coupon coupon : coupons) {
 			if (coupon.getPrice()<=maxPrice) {
