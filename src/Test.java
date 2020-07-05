@@ -522,7 +522,7 @@ public class Test {
 
 		// insert customers
 		PrintLines.PrintLines();
-		System.out.println("add customers");
+		System.out.println("admin add customers");
 		try {
 			manager.addCustomer(cst1);
 			manager.addCustomer(cst2);
