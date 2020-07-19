@@ -9,6 +9,8 @@ public class LoginManager {
 
 	private static LoginManager instance = null;
 
+	private ClientFacade clientFacade;
+
 	private LoginManager() {
 
 	}
@@ -25,22 +27,37 @@ public class LoginManager {
 	}
 
 	public ClientFacade Login(String email, String password, ClientType clientType) {
-		if (clientType.equals(ClientType.Administrator)) {
-			AdminFacade af = new AdminFacade();
-			if (af.login(email, password)) {
-				return af;
+		switch (clientType) {
+		case Administrator:
+			clientFacade = new AdminFacade();
+			if (clientFacade.login(email, password)) {
+				return clientFacade;
+			} else {
+				return null;
 			}
-		} else if (clientType.equals(ClientType.Company)) {
-			CompanyFacade cof =new CompanyFacade();
-			if (cof.login(email, password)) {
-				return cof;
+		case Company:
+			clientFacade = new CompanyFacade();
+			if (clientFacade.login(email, password)) {
+				int companyID = ((CompanyFacade) clientFacade).getCompanyIdByEmailAndPassword(email, password);
+				((CompanyFacade) clientFacade).setCompanyID(companyID);
+				return clientFacade;
+			} else {
+				return null;
 			}
-			return new CompanyFacade();
-		} else if (clientType.equals(ClientType.Customer)) {
-			return new CustomerFacade();
+		case Customer:
+			clientFacade = new CustomerFacade();
+			if (clientFacade.login(email, password)) {
+				int customerID = ((CustomerFacade) clientFacade).getCustomerIdByEmailAndPassword(email, password);
+				((CustomerFacade) clientFacade).setCustomerID(customerID);
+				return clientFacade;
+			} else {
+				return null;
+			}
+		default:
+			return null;
+
 		}
 
-		return null;
 	}
 
 }

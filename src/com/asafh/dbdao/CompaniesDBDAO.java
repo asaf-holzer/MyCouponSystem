@@ -52,8 +52,49 @@ public class CompaniesDBDAO implements com.asafh.dao.CompaniesDAO {
 		return false;
 
 	}
-	
 
+	public void addCompany(Company company)  {		
+
+		Connection connection = null;
+		try {
+			try {
+				connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
+
+			} catch (InterruptedException e) {
+
+				System.out.println(e.getMessage());
+			}
+
+			String sql = "INSERT INTO `coupons_system`.`companies` (name,email,password) VALUES (?,?,?)";
+
+			PreparedStatement statement = connection.prepareStatement(sql);
+
+			statement.setString(1, company.getName());
+			statement.setString(2, company.getEmail());
+			statement.setString(3, company.getPassword());
+
+			statement.executeUpdate();
+
+			String sql1 = "SELECT * FROM `coupons_system`.`companies` WHERE name= ? AND email=? AND password=?  ";
+
+			PreparedStatement statement1 = connection.prepareStatement(sql1);
+			statement1.setString(1, company.getName());
+			statement1.setString(2, company.getEmail());
+			statement1.setString(3, company.getPassword());
+			ResultSet resultSet = statement1.executeQuery();
+
+			if (resultSet.next()) {
+				company.setId(resultSet.getInt(1));
+			}
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} finally {
+			com.asafh.utils.ConnectionPool.getInstance().returnConnection(connection);
+			connection = null;
+		}
+
+}
 
 	public void updateCompany(int companyID, Company company) {
 		Connection connection = null;
@@ -176,8 +217,44 @@ public class CompaniesDBDAO implements com.asafh.dao.CompaniesDAO {
 
 	}
 	
-	
 	//additions
+	public Company getOneCompanyByEmailAndPassword(String email, String password) {
+		Connection connection = null;
+		try {
+
+			try {
+				connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
+			} catch (InterruptedException e) {
+
+				e.printStackTrace();
+			}
+			String sql = "SELECT * FROM `coupons_system`.`companies` WHERE email=? AND password=? ";
+
+			PreparedStatement statement = connection.prepareStatement(sql);
+			statement.setString(1, email);
+			statement.setString(2, password);
+			ResultSet resultSet = statement.executeQuery();
+
+	
+				if (resultSet.next()) {
+					int id = resultSet.getInt(1);
+					String name = resultSet.getString(2);
+					String emailResult = resultSet.getString(3);
+					String passwordResult = resultSet.getString(4);
+
+					return new Company(id, name, emailResult, passwordResult);
+				}
+			
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} finally {
+			com.asafh.utils.ConnectionPool.getInstance().returnConnection(connection);
+			connection = null;
+		}
+		return null;
+
+	}
+	
 	
 	public boolean isCompanyExistsByNameOrEmail(String name, String email) {//my addition for admin facade
 		Connection connection = null;
@@ -247,48 +324,6 @@ public class CompaniesDBDAO implements com.asafh.dao.CompaniesDAO {
 
 	}
 	
-	public void addCompany(Company company)  {		
-
-			Connection connection = null;
-			try {
-				try {
-					connection = com.asafh.utils.ConnectionPool.getInstance().getConnection();
-
-				} catch (InterruptedException e) {
-
-					System.out.println(e.getMessage());
-				}
-
-				String sql = "INSERT INTO `coupons_system`.`companies` (name,email,password) VALUES (?,?,?)";
-
-				PreparedStatement statement = connection.prepareStatement(sql);
-
-				statement.setString(1, company.getName());
-				statement.setString(2, company.getEmail());
-				statement.setString(3, company.getPassword());
-
-				statement.executeUpdate();
-
-				String sql1 = "SELECT * FROM `coupons_system`.`companies` WHERE name= ? AND email=? AND password=?  ";
-
-				PreparedStatement statement1 = connection.prepareStatement(sql1);
-				statement1.setString(1, company.getName());
-				statement1.setString(2, company.getEmail());
-				statement1.setString(3, company.getPassword());
-				ResultSet resultSet = statement1.executeQuery();
-
-				if (resultSet.next()) {
-					company.setId(resultSet.getInt(1));
-				}
-
-			} catch (SQLException e) {
-				System.out.println(e.getMessage());
-			} finally {
-				com.asafh.utils.ConnectionPool.getInstance().returnConnection(connection);
-				connection = null;
-			}
-
-	}
 	
 
 }

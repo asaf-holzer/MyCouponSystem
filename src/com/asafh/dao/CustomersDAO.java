@@ -15,6 +15,7 @@ public interface CustomersDAO {
 	void deleteCustomer(int customrID);
 	List<Customer> getAllCustomers();
 	Customer getOneCustomer(int customerID);
+	 Customer getOneCustomerByEmailAndPassword(String email, String password);
 	
 	
 	

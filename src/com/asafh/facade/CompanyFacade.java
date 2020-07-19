@@ -16,15 +16,19 @@ public class CompanyFacade extends ClientFacade {
 		super();
 
 	}
+	
+	public int getCompanyID() {
+		return companyID;
+	}
+
+	public void setCompanyID(int companyID) {
+		this.companyID = companyID;
+	}
 
 	@Override
 	public boolean login(String email, String password) {
 
 		return companiesDAO.isCompanyExists(email, password);
-	}
-
-	public CompanyFacade(int companyID) {
-		this.companyID = companyID;
 	}
 
 	public void addCoupon(Coupon coupon) throws CouponException {
@@ -35,35 +39,42 @@ public class CompanyFacade extends ClientFacade {
 				throw new CouponException("sorry... you can't add coupon with the same title");
 			}
 		}
+		if (coupon.getId()!=companyID) {
+			throw new CouponException("sorry... you can't add coupon of another company");
+		}
+		
 
 		couponsDAO.addCoupon(coupon);
 	}
 
 	public void updateCoupon(int couponID, Coupon coupon) throws CouponException {// (int couyponID ) -> my
-		Coupon coup=couponsDAO.getOneCoupon(couponID);																					// addition
+		Coupon coup = couponsDAO.getOneCoupon(couponID); // addition
 		if (coupon.getId() != couponID || coupon.getCompanyID() != couponsDAO.getOneCoupon(couponID).getCompanyID()) {
 			throw new CouponException("sorry... you can't update the coupon_id or company");
 		}
-		if(coupon.getCategory()!=null) {
+		if (coupon.getCategory() != null) {
 			coup.setCategory(coupon.getCategory());
 		}
-		if(coupon.getTitle()!=null) {
+		if (coupon.getTitle() != null) {
 			coup.setTitle(coupon.getTitle());
 		}
-		if(coup.getDescription()!=null) {
+		if (coup.getDescription() != null) {
 			coup.setDestraction(coupon.getDescription());
 		}
-		if(coupon.getStartDate()!=null) {
+		if (coupon.getStartDate() != null) {
 			coup.setStartDate(coupon.getStartDate());
 		}
-		if(coupon.getEndDate()!=null) {
+		if (coupon.getEndDate() != null) {
 			coup.setEndDate(coupon.getEndDate());
 		}
-		if(coupon.getAmount()>0) {
+		if (coupon.getAmount() > 0) {
 			coup.setAmount(coupon.getAmount());
 		}
-		if(coupon.getPrice()>=0) {
+		if (coupon.getPrice() >= 0) {
 			coup.setPrice(coupon.getPrice());
+		}
+		if (coupon.getImage() != null) {
+			coup.setImage(coupon.getImage());
 		}
 		couponsDAO.updateCoupon(coup);
 
@@ -93,7 +104,7 @@ public class CompanyFacade extends ClientFacade {
 		List<Coupon> companyCouponsByCategory = new ArrayList<Coupon>();
 		if (coupons != null) {
 			for (Coupon coupon : coupons) {
-				if (coupon.getCompanyID() == companyID && coupon.getCategory().equals(category) ) {
+				if (coupon.getCompanyID() == companyID && coupon.getCategory().equals(category)) {
 					companyCouponsByCategory.add(coupon);
 				}
 			}
@@ -101,14 +112,13 @@ public class CompanyFacade extends ClientFacade {
 		}
 		return null;
 	}
-	
 
 	public List<Coupon> getCompanyCouponsByMaxPrice(double maxPrice) {
 		List<Coupon> coupons = couponsDAO.getAllCoupons();
 		List<Coupon> companyCouponsByCategory = new ArrayList<Coupon>();
 		if (coupons != null) {
 			for (Coupon coupon : coupons) {
-				if (coupon.getCompanyID() == companyID && coupon.getPrice()<=(maxPrice) ) {
+				if (coupon.getCompanyID() == companyID && coupon.getPrice() <= (maxPrice)) {
 					companyCouponsByCategory.add(coupon);
 				}
 			}
@@ -118,10 +128,15 @@ public class CompanyFacade extends ClientFacade {
 	}
 
 	public Company getCompanyDetails() {
-		Company company= companiesDAO.getOneCompany(companyID);
+		Company company = companiesDAO.getOneCompany(companyID);
 		List<Coupon> coupons = getCompanyCoupons();
 		company.setCoupons(coupons);
 		return company;
+	}
+	
+	// my addition for customer facade
+	public int getCompanyIdByEmailAndPassword(String email, String password) {
+		return companiesDAO.getOneCompanyByEmailAndPassword(email, password).getId();
 	}
 
 }

@@ -10,9 +10,18 @@ import com.asafh.utils.CouponException;
 import com.asafh.utils.CustomerException;
 import com.asafh.utils.TicketsSoldOutException;
 
-public class CustomerFacade extends ClientFacade{
-	
+public class CustomerFacade extends ClientFacade {
+
 	private int customerID;
+	
+
+	public int getCustomerID() {
+		return customerID;
+	}
+
+	public void setCustomerID(int customerID) {
+		this.customerID = customerID;
+	}
 
 	public CustomerFacade() {
 		super();
@@ -21,65 +30,66 @@ public class CustomerFacade extends ClientFacade{
 	public boolean login(String email, String password) {
 		return customersDAO.isCustomerExists(email, password);
 	}
-	
+
 	public void purchaseCoupon(Coupon coupon) throws CustomerException, CouponException {
-		List<Coupon> couponsPurchase= couponsDAO.getArrayListCouponsByCustomer(customerID);
+		List<Coupon> couponsPurchase = couponsDAO.getArrayListCouponsByCustomer(customerID);
 		for (Coupon coup : couponsPurchase) {
-			if(coupon.getId()==coup.getId()) {
+			if (coupon.getId() == coup.getId()) {
 				throw new CustomerException("you bought this coupon allredy...");
 			}
 		}
-		if (coupon.getAmount()<=0) {
+		// check the amount
+		Coupon fromDB = couponsDAO.getOneCoupon(coupon.getId());
+		if (fromDB.getAmount() <= 0) {
 			throw new CouponException("the coupon is out of stock");
-		}else if (coupon.getEndDate().before(new Date())) {
+		//check the date
+		} else if (fromDB.getEndDate().before(new Date())) {
 			throw new CouponException("the coupon has expired");
-		}else {
+		} else {
 			try {
 				couponsDAO.addCouponPurchase(customerID, coupon.getId());
 			} catch (TicketsSoldOutException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		
-		
-		
-		
 	}
-	
-	public List<Coupon> getCustomerCoupons(){
-		
+
+	public List<Coupon> getCustomerCoupons() {
+
 		return couponsDAO.getArrayListCouponsByCustomer(customerID);
 	}
-	
-	public List<Coupon> getCustomerCouponsByCategory(Category category){
-		List<Coupon> coupons= couponsDAO.getArrayListCouponsByCustomer(customerID);
-		List<Coupon> couponsByCategory= new ArrayList<Coupon>();
+
+	public List<Coupon> getCustomerCouponsByCategory(Category category) {
+		List<Coupon> coupons = couponsDAO.getArrayListCouponsByCustomer(customerID);
+		List<Coupon> couponsByCategory = new ArrayList<Coupon>();
 		for (Coupon coupon : coupons) {
 			if (coupon.getCategory().equals(category)) {
-			couponsByCategory.add(coupon);	
+				couponsByCategory.add(coupon);
 			}
 		}
 		return couponsByCategory;
 	}
-	
-	public List<Coupon> getCustomerCouponsByMaxPrice(double maxPrice){
-		List<Coupon> coupons= couponsDAO.getArrayListCouponsByCustomer(customerID);
-		List<Coupon> couponsByMaxPrice= new ArrayList<Coupon>();
+
+	public List<Coupon> getCustomerCouponsByMaxPrice(double maxPrice) {
+		List<Coupon> coupons = couponsDAO.getArrayListCouponsByCustomer(customerID);
+		List<Coupon> couponsByMaxPrice = new ArrayList<Coupon>();
 		for (Coupon coupon : coupons) {
-			if (coupon.getPrice()<=maxPrice) {
-				couponsByMaxPrice.add(coupon);	
+			if (coupon.getPrice() <= maxPrice) {
+				couponsByMaxPrice.add(coupon);
 			}
 		}
 		return couponsByMaxPrice;
-	
+
 	}
-	
+
 	public Customer getCustomerDetails() {
-		Customer customer= customersDAO.getOneCustomer(customerID);
-		List<Coupon> coupons= getCustomerCoupons();
-		customer.setCoupons(coupons);
+		Customer customer = customersDAO.getOneCustomer(customerID);
+		customer.setCoupons(getCustomerCoupons());
 		return customer;
 	}
 	
+	public int getCustomerIdByEmailAndPassword(String email, String password) {
+		return customersDAO.getOneCustomerByEmailAndPassword(email, password).getId();
+	}
+
 }

@@ -16,7 +16,8 @@ public interface CompaniesDAO {
 	//additions
 	boolean isCompanyExistsByNameOrEmail(String name, String email) ;//my addition for admin facade
 	boolean isCompanyExistsByCompanyID(int companyID);// my addition for exeption
-
+	Company getOneCompanyByEmailAndPassword(String email, String password);//my addition for company facade
+	
 	
 	
 }
