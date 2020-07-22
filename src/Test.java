@@ -25,6 +25,7 @@ import com.asafh.utils.BeautyTable;
 import com.asafh.utils.CompanyException;
 import com.asafh.utils.ConnectionPool;
 import com.asafh.utils.CouponException;
+import com.asafh.job.CouponExpirationDailyJob;
 import com.asafh.utils.CustomerException;
 import com.asafh.utils.DateWrongException;
 import com.asafh.utils.TicketsSoldOutException;
@@ -33,6 +34,7 @@ import com.asafh.utils.updateCompanyException;
 
 public class Test {
 
+	// easy to insert normal date
 	public static Date realDate(int year, int month, int day) {
 		Date d1 = new Date(year - 1900, month - 1, day + 1);
 		return d1;
@@ -42,18 +44,18 @@ public class Test {
 		return new java.sql.Date(date.getTime());
 	}
 
-	public static void printArraylist(List arr) {
-		System.out.println(
-				"****************************************************************************************************");
-		for (Object object : arr) {
-			System.out.println(object);
-		}
-		System.out.println(
-				"****************************************************************************************************");
-	}
+//	public static void printArraylist(List arr) {
+//		System.out.println(
+//				"****************************************************************************************************");
+//		for (Object object : arr) {
+//			System.out.println(object);
+//		}
+//		System.out.println(
+//				"****************************************************************************************************");
+//	}
 
-	public static void TestAll()
-			throws DateWrongException, duplicateCategoryException, TicketsSoldOutException, CompanyException {
+	public static void TestAll() throws DateWrongException, duplicateCategoryException, TicketsSoldOutException,
+			CompanyException, CouponException {
 		PrintTitles.asafsP();
 		DBManeger.dropAndCreateAllTables();
 
@@ -397,6 +399,8 @@ public class Test {
 //		********************************************************************************************
 //		********************************************************************************************
 //		********************************************************************************************		                                               
+		
+
 		// now try the facade layer
 		// first of all drop the tables and restart
 
@@ -444,20 +448,27 @@ public class Test {
 			System.out.println(e.getMessage());
 		}
 
-		System.out.println("the companies added by Administrator");
-		BeautyTable.tableWithLinesCompanies(manager.getAllCompanies());
 		PrintLines.PrintLines();
+		System.out.println("the companies added by Administrator");
+		PrintLines.printOneLine();
+		BeautyTable.tableWithLinesCompanies(manager.getAllCompanies());
 
+		// try to add company with the same name
+		PrintLines.PrintLines();
 		System.out.println("try to add company with the same name");
+		PrintLines.printOneLine();
+
 		try {
 			manager.addCompany(comp5);
 
 		} catch (CompanyException e) {
 			System.out.println(e.getMessage());
 		}
-		PrintLines.printOneLine();
 
+		// try to add company with the same email
+		PrintLines.PrintLines();
 		System.out.println("try to add company with the same email");
+		PrintLines.printOneLine();
 		try {
 			manager.addCompany(comp6);
 		} catch (CompanyException e) {
@@ -468,9 +479,12 @@ public class Test {
 		PrintLines.PrintLines();
 		System.out.println("try the update company method");
 		PrintLines.printOneLine();
+
+		// try to update company id
+		System.out.println("try to update company id");
+		PrintLines.printOneLine();
 		System.out.println("the origin company details: ");
 		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(1));
-		System.out.println("try to update id company");
 		comp1.setId(2);
 		try {
 			manager.updateCompany(1, comp1);
@@ -482,10 +496,11 @@ public class Test {
 		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(1));
 		PrintLines.printOneLine();
 
+		// try to update company name
+		System.out.println("try to update company name");
+		PrintLines.printOneLine();
 		System.out.println("the origin company details: ");
 		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(2));
-
-		System.out.println("try to update name company");
 		comp2.setName("pepsi-cola");
 		try {
 			manager.updateCompany(2, comp2);
@@ -495,12 +510,12 @@ public class Test {
 		System.out.println("the company details after updating: ");
 		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(2));
 
+		// try to update email company
 		PrintLines.printOneLine();
-
+		System.out.println("try to update email company");
+		PrintLines.printOneLine();
 		System.out.println("the origin company details: ");
 		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(3));
-
-		System.out.println("try to update email company");
 		comp3.setEmail("alf@alfredo.com");
 		try {
 			manager.updateCompany(3, comp3);
@@ -511,9 +526,10 @@ public class Test {
 		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(3));
 		PrintLines.printOneLine();
 
+		// try to update password company
+		System.out.println("try to update password company");
 		System.out.println("the origin company details: ");
 		BeautyTable.tableWithLinesOneCompany(manager.getOneCompany(4));
-		System.out.println("try to update password company");
 		comp4.setPassword("45678");
 		try {
 			manager.updateCompany(4, comp4);
@@ -525,6 +541,13 @@ public class Test {
 		PrintLines.printOneLine();
 
 		PrintLines.PrintLines();
+
+		/*
+		 * 
+		 * delete company we will try after create coupons and purchase coupon get
+		 * company also we will try after create coupon
+		 * 
+		 */
 		System.out.println(
 				"-----------------------------------------add && update customers------------------------------------");
 
@@ -544,15 +567,12 @@ public class Test {
 			manager.addCustomer(cst2);
 			manager.addCustomer(cst3);
 			manager.addCustomer(cst4);
-		} catch (CustomerException e) {
-			System.err.println(e.getMessage());
-		}
-
-		try {
 			manager.addCustomer(cst5);
 		} catch (CustomerException e) {
 			System.err.println(e.getMessage());
 		}
+
+		// try to add customer with email exist...
 		try {
 			System.out.println("try to add customer with email exist...");
 			manager.addCustomer(cst6);
@@ -564,13 +584,16 @@ public class Test {
 		BeautyTable.tableWithLinesCustomers(manager.getAllCustomers());
 		PrintLines.PrintLines();
 
-		// try the update customers
+		// try the update customers method
 		PrintLines.PrintLines();
-		System.out.println("try the update customers");
+		System.out.println("try the update customers method");
+		PrintLines.printOneLine();
+
+		// try to update id
+		System.out.println("try to update id");
 		PrintLines.printOneLine();
 		System.out.println("the origin customer details: ");
 		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(1));
-		System.out.println("try to update id");
 		cst1.setId(2);
 		try {
 			manager.updateCustomer(1, cst1);
@@ -580,9 +603,12 @@ public class Test {
 		System.out.println("the customer details after updating: ");
 		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(1));
 		PrintLines.printOneLine();
+
+		// try to update first name
+		System.out.println("try to update first name");
+		PrintLines.printOneLine();
 		System.out.println("the origin customer details: ");
 		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(2));
-		System.out.println("try to update first name");
 		cst2.setFirstName("aaaa");
 		try {
 			manager.updateCustomer(2, cst2);
@@ -592,9 +618,12 @@ public class Test {
 		System.out.println("the customer details after updating: ");
 		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(2));
 		PrintLines.printOneLine();
+
+		// try to update last name
+		System.out.println("try to update last name");
+		PrintLines.printOneLine();
 		System.out.println("the origin customer details: ");
 		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(3));
-		System.out.println("try to update last name");
 		cst3.setLastName("bbbb");
 		try {
 			manager.updateCustomer(3, cst3);
@@ -604,9 +633,12 @@ public class Test {
 		System.out.println("the customer details after updating: ");
 		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(3));
 		PrintLines.printOneLine();
+
+		// try to update email
+		System.out.println("try to update email");
+		PrintLines.printOneLine();
 		System.out.println("the origin customer details: ");
 		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(4));
-		System.out.println("try to update email");
 		cst4.setEmail("asaf@hollzer.com");
 		try {
 			manager.updateCustomer(4, cst4);
@@ -616,9 +648,12 @@ public class Test {
 		System.out.println("the customer details after updating: ");
 		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(4));
 		PrintLines.printOneLine();
+
+		// try to update password
+		System.out.println("try to update password");
+		PrintLines.printOneLine();
 		System.out.println("the origin customer details: ");
 		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(5));
-		System.out.println("try to update password");
 		cst5.setPassword("92745");
 		try {
 			manager.updateCustomer(5, cst5);
@@ -627,6 +662,13 @@ public class Test {
 		}
 		System.out.println("the customer details after updating: ");
 		BeautyTable.tableWithLinesOneCustomer(manager.getOneCustomer(5));
+
+		/*
+		 * 
+		 * delete and get customer we will try after purchase coupon
+		 * 
+		 * 
+		 */
 
 //			                                                             __                              _        
 //		    ___    ___    _ __ ___    _ __     __ _   _ __    _   _     / _|   __ _    ___    __ _    __| |   ___ 
@@ -638,65 +680,82 @@ public class Test {
 
 		CompanyFacade companyF = (CompanyFacade) LoginManager.getInstance().Login("alf@alfredo.com", "3456",
 				ClientType.Company);
-		
+
 		// create coupons
 
 		Coupon coup3 = new Coupon(companyF.getCompanyID(), Category.Restaurant, "2+1", "the therd free",
 				realDate(2020, 6, 25), realDate(2020, 9, 9), 70, 2.0, "https://bla bla... ");
 		Coupon coup4 = new Coupon(companyF.getCompanyID(), Category.Electricity, "hat", "buy one get hat",
 				realDate(2020, 6, 25), realDate(2020, 9, 9), 85, 4.5, "https://bla bla... ");
-		// try the add method
+
+		// try the add coupon method
+		System.out.println("try the add coupon method");
 		try {
 			companyF.addCoupon(coup3);
 			companyF.addCoupon(coup4);
 
 		} catch (CouponException e) {
 
-			e.getMessage();
+			System.err.println(e.getMessage());
 		}
 
-		System.out.println("the coupons of- " + companyF.getCompanyDetails().getName()+" with id- "+companyF.getCompanyDetails().getId());
+		System.out.println("the coupons of- " + companyF.getCompanyDetails().getName() + " with id- "
+				+ companyF.getCompanyDetails().getId());
 		BeautyTable.tableWithLinesCoupons(companyF.getCompanyCoupons());
 
 		// try to add coupon with the same title for the same company
 		Coupon coup1 = new Coupon(companyF.getCompanyID(), Category.Food, "hat", "buy one get hat",
 				realDate(2020, 4, 25), realDate(2020, 5, 7), 100, 3.0, "https://bla bla... ");
-
+		PrintLines.PrintLines();
 		System.out.println("try to add coupon with the same title for the same company");
+		PrintLines.printOneLine();
 		try {
 			companyF.addCoupon(coup1);
 		} catch (CouponException e1) {
-			// TODO Auto-generated catch block
 			System.err.println(e1.getMessage());
 		}
+
+		Coupon coup10 = new Coupon(companyF.getCompanyID(), Category.Restaurant, "21", "the therd free",
+				realDate(2020, 4, 4), realDate(2020, 5, 5), 70, 2.0, "https://bla bla... ");
+		companyF.addCoupon(coup10);
 		// try another company for testing add coupon with the same title
+		PrintLines.PrintLines();
+		System.out.println("try to add coupon with the same title for another company ");
+		PrintLines.printOneLine();
 		CompanyFacade companyF2 = (CompanyFacade) LoginManager.getInstance().Login("pepsy@cola.com", "2345",
 				ClientType.Company);
 		Coupon coup2 = new Coupon(companyF2.getCompanyID(), Category.Food, "2+1", "buy one get two",
 				realDate(2020, 4, 25), realDate(2020, 5, 7), 50, 3.5, "https://bla bla... ");
+		Coupon coup9 = new Coupon(companyF2.getCompanyID(), Category.Vacation, "77+1", "buy 77 get one",
+				realDate(2020, 4, 25), realDate(2020, 9, 9), 50, 3.5, "https://bla bla... ");
 		try {
 			companyF2.addCoupon(coup2);
+			companyF2.addCoupon(coup9);
+
 		} catch (CouponException e) {
-			// TODO Auto-generated catch block
-			e.getMessage();
+			System.err.println(e.getMessage());
 		}
-		System.out.println("try if the coupon added with the same title for another company");
+		System.out.println("check if the coupon added with the same title for another company");
 		BeautyTable.tableWithLinesCoupons(companyF2.getCompanyCoupons());
 
-		// try the update coupon
-		System.out.println("try to update the id coupon to 13");
+		// try the update coupon method
+		PrintLines.PrintLines();
+		System.out.println("try to update the coupon id to 13");
+		PrintLines.printOneLine();
 		coup3.setId(13);
 		try {
 			companyF.updateCoupon(1, coup3);
 		} catch (CouponException e) {
-			// TODO Auto-generated catch block
 			System.err.println(e.getMessage());
 		}
 		System.out.println("the coupon after updating");
 		BeautyTable.tableWithLinesCoupons(companyF.getCompanyCoupons());
-
 		coup3.setId(1);
-		System.out.println("try to update company id");
+
+		// try to update company id
+		PrintLines.PrintLines();
+		System.out.println("try to update company id to 13");
+		PrintLines.printOneLine();
 		coup3.setCompanyID(13);
 		try {
 			companyF.updateCoupon(1, coup3);
@@ -705,9 +764,12 @@ public class Test {
 		}
 		System.out.println("the coupon after updating");
 		BeautyTable.tableWithLinesCoupons(companyF.getCompanyCoupons());
-
 		coup3.setCompanyID(3);
 
+		// try update the rest of the details
+		PrintLines.PrintLines();
+		System.out.println("try update the rest of the details");
+		PrintLines.printOneLine();
 		System.out.println("the origin coupon details");
 		BeautyTable.tableWithLinesCoupons(companyF.getCompanyCoupons());
 		System.out.println("try to update the coupon details");
@@ -728,14 +790,25 @@ public class Test {
 		System.out.println("the coupon after updating");
 		BeautyTable.tableWithLinesCoupons(companyF.getCompanyCoupons());
 
-		// try to return all companies
-		System.out.println("try to return all companies");
-		System.out.println(manager.getAllCompanies());
-		// BeautyTable.tableWithLinesCompaniesAllDetails(manager.getAllCompanies());
+		// try get all company coupons
+		PrintLines.PrintLines();
+		System.out.println("get all company coupons");
+		BeautyTable.tableWithLinesCoupons(companyF.getCompanyCoupons());
 
-		// try to return one company by id
-		System.out.println("try to return one company by id: 2");
-		System.out.println(manager.getOneCompany(2));
+		// try get all company coupons by category: food
+		PrintLines.PrintLines();
+		System.out.println("get company coupon by category: food ");
+		BeautyTable.tableWithLinesCoupons(companyF.getCompanyCouponsByCategory(Category.Food));
+
+		// try get all company coupons cheaper than 15 ins
+		PrintLines.PrintLines();
+		System.out.println("get company coupons cheaper than 15 ins");
+		BeautyTable.tableWithLinesCoupons(companyF.getCompanyCouponsByMaxPrice(15));
+
+		// try get the company details
+		PrintLines.PrintLines();
+		System.out.println("the company details:");
+		System.out.println(companyF.getCompanyDetails());
 
 //					
 //		
@@ -749,13 +822,18 @@ public class Test {
 
 		CustomerFacade customerF = (CustomerFacade) LoginManager.getInstance().Login("moshe@gmail.com", "34567",
 				ClientType.Customer);
-		
-		
+
+		// try to buy coupon by customer
+		PrintLines.PrintLines();
+		System.out.println("try to buy coupon by customer (one of them expired");
+		PrintLines.printOneLine();
 		System.out.println("the coupon before purchase. (look at the amount...)");
 		BeautyTable.tableWithLinesOneCoupon(coup3);
 		try {
 			System.out.println("buy coupon #" + coup3.getId());
 			customerF.purchaseCoupon(coup3);
+			customerF.purchaseCoupon(coup9);
+
 			System.out.println("buy coupon #" + coup2.getId());
 			customerF.purchaseCoupon(coup2);
 
@@ -766,14 +844,16 @@ public class Test {
 		BeautyTable.tableWithLinesCoupons(customerF.getCustomerCoupons());
 
 		// try to buy coupon again
-		System.out.println("try to buy #" + coup3.getId() + " again");
+		PrintLines.PrintLines();
+		System.out.println("try to buy coupon #" + coup3.getId() + " again");
+		PrintLines.printOneLine();
 		try {
 			customerF.purchaseCoupon(coup3);
 		} catch (CustomerException | CouponException e) {
 			System.err.println(e.getMessage());
 		}
 
-		Coupon coup5 = new Coupon(companyF2.getCompanyID(), Category.Food, "2+7", "buy two get seven",
+		Coupon coup5 = new Coupon(companyF.getCompanyID(), Category.Food, "2+7", "buy two get seven",
 				realDate(2020, 4, 25), realDate(2020, 9, 9), 0, 3.5, "https://bla bla... ");
 
 		try {
@@ -782,7 +862,9 @@ public class Test {
 			System.err.println(e1.getMessage());
 		}
 		// try to buy coupon with amount=0
+		PrintLines.PrintLines();
 		System.out.println("try to buy coupon with amount=0");
+		PrintLines.printOneLine();
 		try {
 			customerF.purchaseCoupon(coup5);
 		} catch (CustomerException | CouponException e) {
@@ -813,19 +895,37 @@ public class Test {
 			System.err.println(e.getMessage());
 		}
 
+		// try get all customer coupons
+		PrintLines.PrintLines();
 		System.out.println("get all customer coupons");
 		BeautyTable.tableWithLinesCoupons(customerF.getCustomerCoupons());
 
+		// try get all customer coupons by category: food
+		PrintLines.PrintLines();
 		System.out.println("get customer coupon by category: food ");
 		BeautyTable.tableWithLinesCoupons(customerF.getCustomerCouponsByCategory(Category.Food));
 
+		// try get all customer coupons cheaper than 15 ins
+		PrintLines.PrintLines();
 		System.out.println("get customer coupons cheaper than 15 ins");
 		BeautyTable.tableWithLinesCoupons(customerF.getCustomerCouponsByMaxPrice(15));
 
+		// try get the customer details
+		PrintLines.PrintLines();
 		System.out.println("the customer details:");
 		System.out.println(customerF.getCustomerDetails());
 
+		/*
+		 * 
+		 * back to company facade
+		 * 
+		 * 
+		 */
+
 		// try to delete coupon by company facade
+
+		System.out.println("try to delete coupon by company facade");
+		PrintLines.printOneLine();
 		System.out.println("the coupons of company before delete");
 		BeautyTable.tableWithLinesCoupons(companyF.getCompanyCoupons());
 		System.out.println("try to delete coupon by company facade");
@@ -833,137 +933,77 @@ public class Test {
 		System.out.println("the coupons of company after delete");
 		BeautyTable.tableWithLinesCoupons(companyF.getCompanyCoupons());
 
-		
-		
+		/*
+		 * 
+		 * back to admin facade
+		 * 
+		 * now after we have coupons we can try get and delete company/companies by
+		 * admin now after we have customers we can try to get and delete
+		 * customer/customers by admin
+		 * 
+		 */
+
+		// try to get all companies by admin
+		PrintLines.PrintLines();
+		System.out.println("try to get all companies by admin");
+		PrintLines.printOneLine();
+		System.out.println(manager.getAllCompanies());
+
+		// try to return one company by id
+		PrintLines.PrintLines();
+		System.out.println("try to return one company by id: 2");
+		PrintLines.printOneLine();
+		System.out.println(manager.getOneCompany(2));
+
+		// try to delete company (that have coupons)
+		PrintLines.PrintLines();
+		System.out.println("try to delete company with id-2 (that have coupons)");
+		PrintLines.printOneLine();
+		System.out.println("and we can see a customer purchsed the company coupons...");
+		System.out.println(manager.getOneCustomer(3));
+		manager.deleteCompany(2);
+		System.out.println("after deletion...");
+		System.out.println(manager.getAllCompanies());
+		System.out.println(manager.getOneCustomer(3));
+
+		// try get all customers by admin
+		System.out.println("try get all customers by admin");
+		PrintLines.printOneLine();
+		System.out.println(manager.getAllCustomers());
+
+		// try to return one customer by id
+		PrintLines.PrintLines();
+		System.out.println("try to return one customer by id: 3");
+		PrintLines.printOneLine();
+		System.out.println(manager.getOneCustomer(3));
+
+		// try to delete customer (with coupons...)
+		System.out.println("try to delete customer (with coupons...)");
+		manager.deleteCustomer(3);
+		System.out.println("after deletion...");
+		System.out.println(manager.getAllCustomers());
+
+		// try the CouponExpirationDailyJob
+
+		BeautyTable.tableWithLinesCoupons(companyF.getCompanyCoupons());
+
+		// System.out.println(companyF.getCompanyCoupons());
+
 	}
 
 	public static void main(String[] args) throws InterruptedException, TicketsSoldOutException, DateWrongException,
-			CustomerException, duplicateCategoryException, CompanyException {
+			CustomerException, duplicateCategoryException, CompanyException, CouponException, ClassNotFoundException {
+	
+
+		CouponExpirationDailyJob t1 = new CouponExpirationDailyJob();
+
+		
+		//t1.start();
 
 		TestAll();
 
-//		
-//		
-//		AdminFacade af= new AdminFacade();
-//		
-//		
-//			
-//			try {
-//				af.addCompany(cmp5);
-//				
-//			} catch (duplicateCompanyException e2) {
-//				// TODO Auto-generated catch block
-//				System.out.println(e2.getMessage());
-//			}
-//			
-//			try {
-//				af.addCompany(cmp6);
-//			} catch (duplicateCompanyException e2) {
-//				// TODO Auto-generated catch block
-//				System.out.println(e2.getMessage());
-//			}
-//			
-//			System.out.println("company number #2 before update is: "+cmpDbdao.getOneCompany(2));
-//			System.out.println("***************************");
-//			
-//			
-//			cmp2.setPassword("123456");
-//			
-//			try {
-//				af.updateCompany(2, cmp2);
-//			} catch (updateCompanyException e1) {
-//				// TODO Auto-generated catch block
-//				System.out.println(e1.getMessage());
-//			}
-//			cmp3.setName("alfredo&shut");
-//			try {
-//				af.updateCompany(3, cmp3);
-//			} catch (updateCompanyException e1) {
-//				// TODO Auto-generated catch block
-//				System.out.println(e1.getMessage());
-//			}
-//			
-//			
-//			System.out.println("all of the companies");
-//			printArraylist(cmpDbdao.getAllCompanies());
-//			System.out.println("company number #4");
-//			System.out.println(cmpDbdao.getOneCompany(4));
-//			
-//			System.out.println("##################################");
-//			
-//			
-//
-//
-//		
-//		
-//		
-//		
-//		cstDbdao.addCustomer(cs1);
-//		cstDbdao.addCustomer(cs2);
-//		cstDbdao.addCustomer(cs3);
-//		cstDbdao.addCustomer(cs4);
-//		cstDbdao.addCustomer(cs5);
-//		cstDbdao.addCustomer(cs6);
-//		
-//		System.out.println("customer number #3 before update is: "+cstDbdao.getOneCustomer(3));
-//		System.out.println("*******************************");
-//		
-//		cs3.setEmail("moshecohen@gmail.com");
-//
-//		cstDbdao.updateCustomer(cs3);
-//		//cstDbdao.deleteCustomer(5);
-//		System.out.println("all customers");
-//		printArraylist(cstDbdao.getAllCustomers());
-//
-//		CategoriesDBDAO ctgDbdao = new CategoriesDBDAO();
-//
-//		try {
-//			ctgDbdao.addCategory(Category.Electricity);
-//			ctgDbdao.addCategory(Category.Food);
-//			ctgDbdao.addCategory(Category.Restaurant);
-//			ctgDbdao.addCategory(Category.Vacation);
-//		} catch (duplicateCategoryException e) {
-//			System.out.println(e.getMessage());
-//		}
-//
-//		
-//		
-//
-//		copDbdao.addCoupon(cp1);
-//		copDbdao.addCoupon(cp2);
-//		copDbdao.addCoupon(cp3);
-//		copDbdao.addCoupon(cp4);
-//		
-//		copDbdao.addCouponPurchase(cs1.getId(), cp1.getId());
-//		copDbdao.addCouponPurchase(cs2.getId(), cp2.getId());
-//		copDbdao.addCouponPurchase(cs1.getId(), cp3.getId());
-//		copDbdao.addCouponPurchase(cs1.getId(), cp4.getId());
-//		
-//		
-//		af.deleteCompany(2);
-//		//cmpDbdao.deleteCompany(2);
-//		//copDbdao.deleteAllCouponsByCompany(2);
-//		//copDbdao.deleteCoupon(3);
-//		System.out.println("all companies");
-//		printArraylist(cmpDbdao.getAllCompanies());
-//		System.out.println("all coupons");
-//		printArraylist(copDbdao.getAllCoupons());
-//		
-//		copDbdao.getOneCoupon(2);
-//
-//		
-//		
-////		System.out.println();
-////		System.out.println("all coupons belong to customer number#1");
-////		cs1.setCoupons(copDbdao.getArrayListCouponsPerCustomer(1));
-////		
-////		printArraylist(cs1.getCoupons());
-////		
-////		System.out.println("Customer Number #1-> "+cs1);
-////		
-//////		Thread t1 = new CouponExpirationDailyJob();
-//////		t1.start();
-////
+		//t1.stopJob();
+
 		ConnectionPool.getInstance().closeAllConnection();
 
 		System.out.println("END");

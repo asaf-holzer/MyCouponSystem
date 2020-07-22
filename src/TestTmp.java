@@ -33,6 +33,7 @@ public class TestTmp {
 		System.out.println("START");
 		DBManeger.dropAndCreateAllTables();;
 		
+		
 		System.out.println("END");
 	}
 

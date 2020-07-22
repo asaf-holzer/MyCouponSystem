@@ -3,6 +3,7 @@ package com.asafh.facade;
 import java.util.List;
 
 import com.asafh.beans.Company;
+import com.asafh.beans.Coupon;
 import com.asafh.beans.Customer;
 import com.asafh.utils.CompanyException;
 import com.asafh.utils.CustomerException;
@@ -64,7 +65,12 @@ public class AdminFacade extends ClientFacade {
 		if (!companiesDAO.isCompanyExistsByCompanyID(companyID)) {
 			throw new CompanyException("the company is not exist by this id");
 		}
-		couponsDAO.deleteAllCouponsByCompany(companyID);
+		List<Coupon> resultCoupons=couponsDAO.getAllCoupons();
+		for (Coupon coupon : resultCoupons) {
+			if (coupon.getCompanyID()==companyID) {
+				couponsDAO.deleteCoupon(coupon.getId());;
+			}
+		}
 		companiesDAO.deleteCompany(companyID);
 	}
 
@@ -116,7 +122,12 @@ public class AdminFacade extends ClientFacade {
 	}
 
 	public List<Customer> getAllCustomers() {
-		return customersDAO.getAllCustomers();
+		List<Customer> Customers = customersDAO.getAllCustomers();
+		for (Customer customer : Customers) {
+			customer.setCoupons(couponsDAO.getArrayListCouponsByCustomer(customer.getId()));
+		}
+		return Customers;
+		
 	}
 
 	public Customer getOneCustomer(int customerID) throws CompanyException {

@@ -39,7 +39,7 @@ public class CompanyFacade extends ClientFacade {
 				throw new CouponException("sorry... you can't add coupon with the same title");
 			}
 		}
-		if (coupon.getId()!=companyID) {
+		if (coupon.getCompanyID()!=companyID) {
 			throw new CouponException("sorry... you can't add coupon of another company");
 		}
 		
