@@ -28,6 +28,7 @@ import com.asafh.utils.CouponException;
 import com.asafh.job.CouponExpirationDailyJob;
 import com.asafh.utils.CustomerException;
 import com.asafh.utils.DateWrongException;
+import com.asafh.utils.LoginDeniedExption;
 import com.asafh.utils.TicketsSoldOutException;
 import com.asafh.utils.duplicateCategoryException;
 import com.asafh.utils.updateCompanyException;
@@ -434,9 +435,23 @@ public class Test {
 //            | (_| | | (_| | | | | | | | | | | | | |   |  _| | (_| | | (__  | (_| | | (_| | |  __/
 //             \__,_|  \__,_| |_| |_| |_| |_| |_| |_|   |_|    \__,_|  \___|  \__,_|  \__,_|  \___|
 //                                                                                 
-		AdminFacade manager = (AdminFacade) LoginManager.getInstance().Login("admin@admin.com", "admin",
-				ClientType.Administrator);
+		System.out.println("try to login with worng user name");
+		try {
+			AdminFacade manager1 = (AdminFacade) LoginManager.getInstance().Login("administrator@admin.com", "admin",
+					ClientType.Administrator);
+		} catch (LoginDeniedExption e2) {
+			System.err.println(e2.getMessage());
+		}
+		
+		AdminFacade manager = null;
+		try {
+			manager = (AdminFacade) LoginManager.getInstance().Login("admin@admin.com", "admin",
+					ClientType.Administrator);
+		} catch (LoginDeniedExption e2) {
+			System.err.println(e2.getMessage());
+		}
 
+		
 		// insert new companies
 		try {
 			manager.addCompany(comp1);
@@ -678,8 +693,21 @@ public class Test {
 //		                             |_|                      |___/                                               
 //
 
-		CompanyFacade companyF = (CompanyFacade) LoginManager.getInstance().Login("alf@alfredo.com", "3456",
-				ClientType.Company);
+		System.out.println("try to login with worng user name");
+		try {
+			CompanyFacade companyF1 = (CompanyFacade) LoginManager.getInstance().Login("Moshe@alfredo.com", "3456",
+					ClientType.Company);
+		} catch (LoginDeniedExption e3) {
+			System.err.println(e3.getMessage());
+		}
+		CompanyFacade companyF = null;
+		try {
+			companyF = (CompanyFacade) LoginManager.getInstance().Login("alf@alfredo.com", "3456",
+					ClientType.Company);
+		} catch (LoginDeniedExption e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 
 		// create coupons
 
@@ -722,8 +750,14 @@ public class Test {
 		PrintLines.PrintLines();
 		System.out.println("try to add coupon with the same title for another company ");
 		PrintLines.printOneLine();
-		CompanyFacade companyF2 = (CompanyFacade) LoginManager.getInstance().Login("pepsy@cola.com", "2345",
-				ClientType.Company);
+		CompanyFacade companyF2 = null;
+		try {
+			companyF2 = (CompanyFacade) LoginManager.getInstance().Login("pepsy@cola.com", "2345",
+					ClientType.Company);
+		} catch (LoginDeniedExption e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		Coupon coup2 = new Coupon(companyF2.getCompanyID(), Category.Food, "2+1", "buy one get two",
 				realDate(2020, 4, 25), realDate(2020, 5, 7), 50, 3.5, "https://bla bla... ");
 		Coupon coup9 = new Coupon(companyF2.getCompanyID(), Category.Vacation, "77+1", "buy 77 get one",
@@ -820,8 +854,20 @@ public class Test {
 //                                                                                            
 //		
 
-		CustomerFacade customerF = (CustomerFacade) LoginManager.getInstance().Login("moshe@gmail.com", "34567",
-				ClientType.Customer);
+		System.out.println("try to login with worng user name");
+		try {
+			CustomerFacade customerF1 = (CustomerFacade) LoginManager.getInstance().Login("Shimona@gmail.com", "34567",
+					ClientType.Customer);
+		} catch (LoginDeniedExption e3) {
+			System.err.println(e3.getMessage());
+		}
+		CustomerFacade customerF = null;
+		try {
+			customerF = (CustomerFacade) LoginManager.getInstance().Login("moshe@gmail.com", "34567",
+					ClientType.Customer);
+		} catch (LoginDeniedExption e2) {
+			System.err.println(e2.getMessage());
+		}
 
 		// try to buy coupon by customer
 		PrintLines.PrintLines();
@@ -992,18 +1038,18 @@ public class Test {
 	}
 
 	public static void main(String[] args) throws InterruptedException, TicketsSoldOutException, DateWrongException,
-			CustomerException, duplicateCategoryException, CompanyException, CouponException, ClassNotFoundException {
+			CustomerException, duplicateCategoryException, CompanyException, CouponException, ClassNotFoundException, LoginDeniedExption {
 	
 
 		CouponExpirationDailyJob t1 = new CouponExpirationDailyJob();
 
 		
-		//t1.start();
+		t1.start();
 
 		TestAll();
 
-		//t1.stopJob();
-
+		t1.stopJob();
+		t1.join();
 		ConnectionPool.getInstance().closeAllConnection();
 
 		System.out.println("END");

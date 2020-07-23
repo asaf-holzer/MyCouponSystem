@@ -4,6 +4,7 @@ import com.asafh.facade.AdminFacade;
 import com.asafh.facade.ClientFacade;
 import com.asafh.facade.CompanyFacade;
 import com.asafh.facade.CustomerFacade;
+import com.asafh.utils.LoginDeniedExption;
 
 public class LoginManager {
 
@@ -26,14 +27,14 @@ public class LoginManager {
 		return instance;
 	}
 
-	public ClientFacade Login(String email, String password, ClientType clientType) {
+	public ClientFacade Login(String email, String password, ClientType clientType) throws LoginDeniedExption {
 		switch (clientType) {
 		case Administrator:
 			clientFacade = new AdminFacade();
 			if (clientFacade.login(email, password)) {
 				return clientFacade;
 			} else {
-				return null;
+				throw new LoginDeniedExption();
 			}
 		case Company:
 			clientFacade = new CompanyFacade();
@@ -42,7 +43,7 @@ public class LoginManager {
 				((CompanyFacade) clientFacade).setCompanyID(companyID);
 				return clientFacade;
 			} else {
-				return null;
+				throw new LoginDeniedExption();
 			}
 		case Customer:
 			clientFacade = new CustomerFacade();
@@ -51,7 +52,7 @@ public class LoginManager {
 				((CustomerFacade) clientFacade).setCustomerID(customerID);
 				return clientFacade;
 			} else {
-				return null;
+				throw new LoginDeniedExption();
 			}
 		default:
 			return null;
